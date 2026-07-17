@@ -14,9 +14,9 @@
 
 // ---------- 난이도 파라미터 ----------
 const DIFFICULTY = {
-  easy:   { key: "easy",   emoji: "😊", zone: 0.36, chopMs: 1500, gauge: 9,  cuts: 4, pieces: 3, mash: 14, decoys: 2, base: 180, grill: [50, 88], chopTime: 36 },
-  normal: { key: "normal", emoji: "🔥", zone: 0.20, chopMs: 1050, gauge: 16, cuts: 6, pieces: 4, mash: 22, decoys: 4, base: 240, grill: [55, 82], chopTime: 30 },
-  hard:   { key: "hard",   emoji: "💀", zone: 0.10, chopMs: 720,  gauge: 26, cuts: 8, pieces: 5, mash: 32, decoys: 6, base: 320, grill: [60, 78], chopTime: 24 },
+  easy:   { key: "easy",   emoji: "😊", zone: 0.36, chopMs: 1500, gauge: 9,  cuts: 4, pieces: 3, mash: 14, decoys: 2, base: 180, grill: [50, 88], chopTime: 36, selectTime: 30, seasonTime: 22 },
+  normal: { key: "normal", emoji: "🔥", zone: 0.20, chopMs: 1050, gauge: 16, cuts: 6, pieces: 4, mash: 22, decoys: 4, base: 240, grill: [55, 82], chopTime: 30, selectTime: 24, seasonTime: 17 },
+  hard:   { key: "hard",   emoji: "💀", zone: 0.10, chopMs: 720,  gauge: 26, cuts: 8, pieces: 5, mash: 32, decoys: 6, base: 320, grill: [60, 78], chopTime: 24, selectTime: 18, seasonTime: 13 },
 };
 
 const state = {
@@ -24,6 +24,8 @@ const state = {
   stages: [], stageIdx: 0, score: 0, qualities: [],
   teardown: [],
 };
+
+const START_SCORE = 100;   // 게임 시작 기본 점수 (틀리면 여기서 깎임)
 
 const $ = (id) => document.getElementById(id);
 const t = () => I18N[state.lang];
@@ -37,7 +39,7 @@ function actionEmoji(type) {
   return ({
     select: "🛒", chop: "🔪", mince: "🧄", stirfry: "🍳", boil: "🍲",
     grill: "🔥", season: "🥄", mix: "🥣", plate: "🍽️", rinse: "🚰",
-    blanch: "💧", braise: "🍲", fryegg: "🍳",
+    blanch: "💧", braise: "🍲", fryegg: "🍳", stew: "🍲",
   })[type] || "🍳";
 }
 
@@ -45,6 +47,13 @@ function feedback(msg, ok) {
   const fb = $("feedback");
   fb.textContent = msg;
   fb.className = "feedback " + (ok ? "ok" : "bad");
+}
+
+// 감점: 점수에서 pen 만큼 깎고(0 미만 방지) 화면 갱신. 기본 감점 폭 반환.
+function penaltyAmount() { return Math.round(cfg().base * 0.15); }
+function deductScore(pen) {
+  state.score = Math.max(0, state.score - pen);
+  $("hudScore").textContent = state.score;
 }
 
 // 재료 사진/벡터(있으면) / 이모지(없으면) 를 담은 요소 반환
@@ -99,11 +108,11 @@ function ingVisual(id, extraCls) {
   el.appendChild(img);
   return el;
 }
-// .ingredient 타일 내용 채우기(사진+이름)
-function fillTile(el, id) {
+// .ingredient 타일 내용 채우기(사진+이름). visualCls: 익힘 등 추가 클래스
+function fillTile(el, id, visualCls) {
   el.innerHTML = "";
   const box = document.createElement("div"); box.className = "ing-emoji";
-  box.appendChild(ingVisual(id));
+  box.appendChild(ingVisual(id, visualCls));
   const nm = document.createElement("div"); nm.className = "ing-name"; nm.textContent = ing(id)[state.lang];
   el.appendChild(box); el.appendChild(nm);
 }
@@ -173,12 +182,47 @@ const ENGINES = {};
 // ---- 재료 고르기 ----
 ENGINES.select = function (stage, area, done) {
   const dict = t();
+  // 첫 단계(재료 고르기)에서 기본 점수 지급 → 이후 틀리면 여기서 감점됨
+  if (state.stageIdx === 0) { state.score = START_SCORE; $("hudScore").textContent = state.score; }
   const need = stage.need.slice();
   const decoyN = cfg().decoys;
   const decoys = shuffle(state.dish.decoys.slice()).slice(0, decoyN);
   const tiles = shuffle(need.concat(decoys));
   const collected = new Set();
-  let mistakes = 0;
+  let mistakes = 0, finished = false;
+
+  // 제한시간 바 (재료 고르기)
+  const selTime = cfg().selectTime || 26;
+  let timeLeft = selTime;
+  const timer = document.createElement("div");
+  timer.className = "chop-timer wide";
+  timer.innerHTML = `<div class="chop-timer-fill" id="selTimer"></div><span class="chop-timer-txt" id="selTimerTxt"></span>`;
+  area.appendChild(timer);
+  const selFill = timer.querySelector("#selTimer");
+  const selTxt = timer.querySelector("#selTimerTxt");
+  function updateSelTimer() {
+    const pct = clamp(timeLeft / selTime) * 100;
+    selFill.style.width = pct + "%";
+    selFill.classList.toggle("warn", pct <= 45 && pct > 20);
+    selFill.classList.toggle("danger", pct <= 20);
+    selTxt.textContent = "⏱ " + Math.ceil(timeLeft) + "s";
+  }
+  updateSelTimer();
+  loop((dt) => {
+    if (finished) return false;
+    timeLeft -= dt;
+    if (timeLeft <= 0) { timeLeft = 0; updateSelTimer(); selTimeOut(); return false; }
+    updateSelTimer();
+    return true;
+  });
+  function selTimeOut() {
+    if (finished) return;
+    finished = true;
+    const q = clamp(collected.size / need.length - mistakes * 0.05);
+    feedback(dict.labels.timeUp, false);
+    FX.fail(); FX.vibrate([60, 40, 60]);
+    setTimeout(() => done(q), 900);
+  }
 
   const wrap = document.createElement("div");
   wrap.className = "select-wrap";
@@ -208,6 +252,7 @@ ENGINES.select = function (stage, area, done) {
     el.tabIndex = 0;
     fillTile(el, id);
     const pick = () => {
+      if (finished) return;
       if (need.includes(id)) {
         if (collected.has(id)) return;
         collected.add(id);
@@ -220,14 +265,18 @@ ENGINES.select = function (stage, area, done) {
         feedback(dict.labels.nice, true);
         beep(720, .08);
         if (collected.size === need.length) {
+          finished = true;
           const q = clamp(1 - mistakes * 0.12);
           setTimeout(() => done(q), 350);
         }
       } else {
+        // 잘못된 재료 → 감점
         mistakes++;
+        const pen = penaltyAmount();
+        deductScore(pen);
         el.classList.add("flash-bad");
         setTimeout(() => el.classList.remove("flash-bad"), 350);
-        feedback(dict.labels.oops, false);
+        feedback(dict.labels.oops + " -" + pen, false);
         beep(180, .16, "square");
       }
     };
@@ -752,7 +801,7 @@ function gaugeEngine(stage, area, done, opts) {
   wrap.className = "gauge-wrap";
   wrap.innerHTML = `
     <div class="pot-big">
-      <div class="pot-food">${opts.emoji}</div>
+      <div class="pot-food" id="potFood"></div>
       <div class="bubbles" id="bubbles"></div>
     </div>
     <div class="gauge">
@@ -762,6 +811,9 @@ function gaugeEngine(stage, area, done, opts) {
     </div>
     <button class="tap-btn big done-btn" id="doneBtn">✅ ${dict.doneBtn}</button>`;
   area.appendChild(wrap);
+  // 냄비 속 재료: 이미지(있으면) / 이모지
+  const potFood = wrap.querySelector("#potFood");
+  if (opts.item) potFood.appendChild(ingVisual(opts.item)); else potFood.textContent = opts.emoji || "🍲";
 
   const green = wrap.querySelector("#gGreen");
   green.style.bottom = lo + "%";
@@ -797,6 +849,8 @@ function gaugeEngine(stage, area, done, opts) {
     if (val >= lo && val <= hi) { q = 1; msg = dict.labels.perfect; }
     else if (val < lo) { q = clamp(0.3 + (val / lo) * 0.5); msg = dict.labels.under; ok = false; }
     else { q = clamp(1 - (val - hi) / (100 - hi) * 0.8, 0.2, 1); msg = dict.labels.over; ok = false; }
+    // 초록 구간이 아니면(덜/너무 익음) 감점
+    if (!ok) { const pen = penaltyAmount(); deductScore(pen); msg += " -" + pen; }
     feedback(msg, ok);
     if (ok) { FX.ding(880); FX.vibrate(30); } else FX.fail();
     setTimeout(() => done(q), 400);
@@ -812,10 +866,10 @@ function addBubble(container) {
   setTimeout(() => b.remove(), 1400);
 }
 
-ENGINES.boil   = (s, a, d) => gaugeEngine(s, a, d, { emoji: ing(s.item).emoji, center: 70 });
-ENGINES.blanch = (s, a, d) => gaugeEngine(s, a, d, { emoji: ing(s.item).emoji, center: 58, speed: 1.2 });
-ENGINES.braise = (s, a, d) => gaugeEngine(s, a, d, { emoji: ing(s.item).emoji, center: 80, speed: 0.85 });
-ENGINES.fryegg = (s, a, d) => gaugeEngine(s, a, d, { emoji: "🍳", center: 64, speed: 1.1 });
+ENGINES.boil   = (s, a, d) => gaugeEngine(s, a, d, { item: s.item, center: 70 });
+ENGINES.blanch = (s, a, d) => gaugeEngine(s, a, d, { item: s.item, center: 58, speed: 1.2 });
+ENGINES.braise = (s, a, d) => gaugeEngine(s, a, d, { item: s.item, center: 80, speed: 0.85 });
+ENGINES.fryegg = (s, a, d) => gaugeEngine(s, a, d, { item: "egg", emoji: "🍳", center: 64, speed: 1.1 });
 
 // ---- 굽기 (여러 조각 뒤집기) ----
 ENGINES.grill = function (stage, area, done) {
@@ -896,7 +950,40 @@ ENGINES.grill = function (stage, area, done) {
 ENGINES.season = function (stage, area, done) {
   const dict = t();
   const items = stage.items.slice();
-  let idx = 0, mistakes = 0;
+  let idx = 0, mistakes = 0, finished = false;
+
+  // 제한시간 바 (양념 넣기)
+  const seaTime = cfg().seasonTime || 18;
+  let timeLeft = seaTime;
+  const timer = document.createElement("div");
+  timer.className = "chop-timer";
+  timer.innerHTML = `<div class="chop-timer-fill" id="seaTimer"></div><span class="chop-timer-txt" id="seaTimerTxt"></span>`;
+  area.appendChild(timer);
+  const seaFill = timer.querySelector("#seaTimer");
+  const seaTxt = timer.querySelector("#seaTimerTxt");
+  function updSea() {
+    const pct = clamp(timeLeft / seaTime) * 100;
+    seaFill.style.width = pct + "%";
+    seaFill.classList.toggle("warn", pct <= 45 && pct > 20);
+    seaFill.classList.toggle("danger", pct <= 20);
+    seaTxt.textContent = "⏱ " + Math.ceil(timeLeft) + "s";
+  }
+  updSea();
+  loop((dt) => {
+    if (finished) return false;
+    timeLeft -= dt;
+    if (timeLeft <= 0) { timeLeft = 0; updSea(); seaTimeOut(); return false; }
+    updSea();
+    return true;
+  });
+  function seaTimeOut() {
+    if (finished) return;
+    finished = true;
+    const q = clamp(idx / items.length - mistakes * 0.1);
+    feedback(dict.labels.timeUp, false);
+    FX.fail(); FX.vibrate([60, 40, 60]);
+    setTimeout(() => done(q), 900);
+  }
 
   const wrap = document.createElement("div");
   wrap.className = "season-wrap";
@@ -914,7 +1001,7 @@ ENGINES.season = function (stage, area, done) {
     el.dataset.id = id;
     el.innerHTML = `<span class="sauce-emoji">${ig.emoji}</span><span class="sauce-name">${ig[state.lang]}</span>`;
     el.onclick = () => {
-      if (el.disabled) return;
+      if (finished || el.disabled) return;
       if (id === items[idx]) {
         el.disabled = true; el.classList.add("used");
         idx++;
@@ -924,14 +1011,18 @@ ENGINES.season = function (stage, area, done) {
         added.appendChild(drop);
         feedback(dict.labels.nice, true); FX.pour(); FX.vibrate(12);
         if (idx >= items.length) {
+          finished = true;
           const q = clamp(1 - mistakes * 0.15);
           setTimeout(() => done(q), 350);
         }
       } else {
+        // 순서가 틀림 → 감점
         mistakes++;
+        const pen = penaltyAmount();
+        deductScore(pen);
         el.classList.add("flash-bad");
         setTimeout(() => el.classList.remove("flash-bad"), 350);
-        feedback(dict.labels.oops, false); beep(180, .16, "square");
+        feedback(dict.labels.oops + " -" + pen, false); beep(180, .16, "square");
       }
     };
     tray.appendChild(el);
@@ -949,6 +1040,16 @@ ENGINES.plate = function (stage, area, done) {
   const items = stage.items.slice();
   const baseId = items[0];            // 첫 재료 = 그릇 바닥(밥 등)
   let placed = 0, finished = false;
+
+  // 앞 단계에서 조리된 재료 파악 → 담을 때 '익은 모습'으로 표시
+  const COOK_METHOD = { grill: "grill", braise: "grill", stirfry: "fry", fryegg: "fry", boil: "boil", blanch: "boil" };
+  const cookedBy = {};
+  (state.dish.stages || []).forEach((s) => {
+    const m = COOK_METHOD[s.type];
+    if (!m) return;
+    (s.items || (s.item ? [s.item] : [])).forEach((id) => { cookedBy[id] = m; });
+  });
+  const cookCls = (id) => cookedBy[id] ? "cooked cooked-" + cookedBy[id] : "";
 
   // 각 재료의 그릇 내 위치(오방색 배치): 바닥은 중앙, 나머지는 원형으로
   const toppings = items.slice(1);
@@ -992,7 +1093,7 @@ ENGINES.plate = function (stage, area, done) {
     el.classList.add("dragging");
     ghost = document.createElement("div");
     ghost.className = "drag-ghost";
-    ghost.appendChild(ingVisual(id));
+    ghost.appendChild(ingVisual(id, cookCls(id)));
     document.body.appendChild(ghost);
     moveGhost(e);
     bowl.classList.add("drop-ready");
@@ -1017,7 +1118,7 @@ ENGINES.plate = function (stage, area, done) {
     if (over && dragTile) {
       dragTile.classList.add("used");
       const s = slot[dragId];
-      const pc = ingVisual(dragId, "plate-pc" + (s.base ? " base" : ""));
+      const pc = ingVisual(dragId, ("plate-pc" + (s.base ? " base" : "") + " " + cookCls(dragId)).trim());
       pc.style.left = s.cx + "%"; pc.style.top = s.cy + "%";
       layers.appendChild(pc);
       bowl.classList.remove("pop"); void bowl.offsetWidth; bowl.classList.add("pop");
@@ -1039,6 +1140,114 @@ ENGINES.plate = function (stage, area, done) {
   items.forEach((id) => {
     const el = document.createElement("div");
     el.className = "ingredient plate-src";
+    fillTile(el, id, cookCls(id));
+    el.addEventListener("pointerdown", (e) => startDrag(e, el, id));
+    tray.appendChild(el);
+  });
+  onDoc("pointermove", moveGhost);
+  onDoc("pointerup", endDrag);
+  onDoc("pointercancel", endDrag);
+};
+
+// ---- 찌개/전골 (된장 푼 국에 재료를 넣고 끓여 완성) ----
+ENGINES.stew = function (stage, area, done) {
+  const dict = t();
+  const items = stage.items.slice();
+  let added = 0, finished = false, phase = 1;      // 1: 재료 넣기, 2: 끓이기
+  const rise = cfg().gauge * 0.9;
+  const half = cfg().zone * 50, center = 72, lo = center - half, hi = center + half;
+  let val = 0;
+
+  const wrap = document.createElement("div");
+  wrap.className = "stew-wrap";
+  wrap.innerHTML = `
+    <div class="stew-main">
+      <div class="stew-pot" id="pot">
+        <div class="stew-surface"></div>
+        <div class="stew-items" id="stewItems"></div>
+        <div class="bubbles" id="bub"></div>
+        <div class="stew-hint" id="stewHint">⬇</div>
+      </div>
+      <div class="gauge stew-gauge" id="gauge">
+        <div class="gauge-green" id="gGreen"></div>
+        <div class="gauge-fill" id="gFill"></div>
+        <div class="gauge-arrow" id="gArrow">◀</div>
+      </div>
+    </div>
+    <div class="plate-tray stew-tray" id="tray"></div>
+    <button class="tap-btn big done-btn" id="doneBtn">✅ ${dict.doneBtn}</button>`;
+  area.appendChild(wrap);
+
+  const pot = wrap.querySelector("#pot");
+  const stewItems = wrap.querySelector("#stewItems");
+  const tray = wrap.querySelector("#tray");
+  const bub = wrap.querySelector("#bub");
+  const gauge = wrap.querySelector("#gauge");
+  const doneBtn = wrap.querySelector("#doneBtn");
+  const green = wrap.querySelector("#gGreen");
+  const gFill = wrap.querySelector("#gFill");
+  const gArrow = wrap.querySelector("#gArrow");
+  green.style.bottom = lo + "%"; green.style.height = (hi - lo) + "%";
+  gauge.style.visibility = "hidden";
+  doneBtn.style.display = "none";
+
+  let bubT = 0;
+  loop((dt) => {
+    if (finished) return false;
+    bubT += dt;
+    if (bubT > 0.4) { bubT = 0; addBubble(bub); if (phase === 2) FX.bubble(); }
+    if (phase === 2) {
+      val = Math.min(100, val + rise * dt);
+      gFill.style.height = val + "%";
+      gArrow.style.bottom = val + "%";
+      gArrow.classList.toggle("in-green", val >= lo && val <= hi);
+      if (val >= 100) return finishBoil();
+    }
+    return true;
+  });
+
+  // --- 1단계: 재료를 국에 넣기 (드래그) ---
+  let ghost = null, dragTile = null, dragId = null;
+  function startDrag(e, el, id) {
+    if (phase !== 1 || el.classList.contains("used")) return;
+    dragTile = el; dragId = id;
+    el.classList.add("dragging");
+    ghost = document.createElement("div");
+    ghost.className = "drag-ghost";
+    ghost.appendChild(ingVisual(id));
+    document.body.appendChild(ghost);
+    moveGhost(e);
+    pot.classList.add("drop-ready");
+    FX.vibrate(10);
+    e.preventDefault();
+  }
+  function moveGhost(e) { if (ghost) { ghost.style.left = e.clientX + "px"; ghost.style.top = e.clientY + "px"; } }
+  function endDrag(e) {
+    if (!ghost) return;
+    const r = pot.getBoundingClientRect();
+    const over = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    ghost.remove(); ghost = null;
+    pot.classList.remove("drop-ready");
+    if (dragTile) dragTile.classList.remove("dragging");
+    if (over && dragTile) {
+      dragTile.classList.add("used");
+      const pc = ingVisual(dragId, "stew-pc cooked cooked-boil");
+      pc.style.left = (22 + Math.random() * 56) + "%";
+      pc.style.top = (30 + Math.random() * 45) + "%";
+      stewItems.appendChild(pc);
+      for (let k = 0; k < 5; k++) addBubble(bub);
+      FX.pour(); FX.vibrate(15);
+      feedback(dict.labels.nice, true);
+      added++;
+      if (added >= items.length) startBoil();
+    } else {
+      FX.tone(220, .08, "sine", 0.12);
+    }
+    dragTile = null; dragId = null;
+  }
+  items.forEach((id) => {
+    const el = document.createElement("div");
+    el.className = "ingredient plate-src";
     fillTile(el, id);
     el.addEventListener("pointerdown", (e) => startDrag(e, el, id));
     tray.appendChild(el);
@@ -1046,6 +1255,33 @@ ENGINES.plate = function (stage, area, done) {
   onDoc("pointermove", moveGhost);
   onDoc("pointerup", endDrag);
   onDoc("pointercancel", endDrag);
+
+  // --- 2단계: 끓이기 ---
+  function startBoil() {
+    phase = 2;
+    tray.style.display = "none";
+    wrap.querySelector("#stewHint").style.display = "none";
+    gauge.style.visibility = "visible";
+    doneBtn.style.display = "";
+    pot.classList.add("boiling");
+    feedback(dict.tips.stew, true);
+  }
+  doneBtn.onclick = () => { if (phase === 2) finishBoil(); };
+  pot.addEventListener("click", () => { if (phase === 2) finishBoil(); });
+
+  function finishBoil() {
+    if (finished) return false;
+    finished = true; stopLoops();
+    let q, msg, ok = true;
+    if (val >= lo && val <= hi) { q = 1; msg = dict.labels.perfect; }
+    else if (val < lo) { q = clamp(0.3 + (val / lo) * 0.5); msg = dict.labels.under; ok = false; }
+    else { q = clamp(1 - (val - hi) / (100 - hi) * 0.8, 0.2, 1); msg = dict.labels.over; ok = false; }
+    if (!ok) { const pen = penaltyAmount(); deductScore(pen); msg += " -" + pen; }
+    feedback(msg, ok);
+    if (ok) { FX.ding(880); FX.vibrate(30); } else FX.fail();
+    setTimeout(() => done(q), 500);
+    return false;
+  }
 };
 
 ENGINES._fallback = function (stage, area, done) { done(1); };
@@ -1070,3 +1306,62 @@ function shuffle(arr) {
   }
   return arr;
 }
+
+/* =================================================================
+ *  배경음악 (BGM) — 반복재생 + 음량조절. 우상단에 🎵 버튼을 JS로 삽입.
+ * ============================================================== */
+const BGM_SRC = "assets/bgm/hitslab-korean-korea-korean-music-502004.mp3";
+function setupBGM() {
+  const controls = document.querySelector(".topbar-controls");
+  if (!controls || document.getElementById("bgmBtn")) return;
+
+  const audio = new Audio(BGM_SRC);
+  audio.loop = true;               // 반복재생
+  audio.preload = "auto";
+  let vol = 0.4, wantPlay = true;
+  audio.volume = vol;
+  document.body.appendChild(audio);
+
+  const wrap = document.createElement("div");
+  wrap.className = "bgm-wrap";
+  wrap.innerHTML = `
+    <button class="icon-btn" id="bgmBtn" title="배경음악">🎵</button>
+    <div class="bgm-pop" id="bgmPop">
+      <span class="bgm-pop-icon" id="bgmIcon">🎵</span>
+      <input type="range" id="bgmVol" min="0" max="100" value="40" aria-label="배경음악 음량">
+      <span class="bgm-vol-txt" id="bgmVolTxt">40</span>
+    </div>`;
+  controls.appendChild(wrap);
+
+  const btn = wrap.querySelector("#bgmBtn");
+  const pop = wrap.querySelector("#bgmPop");
+  const slider = wrap.querySelector("#bgmVol");
+  const volTxt = wrap.querySelector("#bgmVolTxt");
+  const icon = wrap.querySelector("#bgmIcon");
+
+  function setIcon() {
+    const on = wantPlay && vol > 0;
+    btn.textContent = on ? "🎵" : "🔇";
+    icon.textContent = on ? "🎵" : "🔇";
+    btn.classList.toggle("bgm-off", !on);
+  }
+  function tryPlay() { if (wantPlay && vol > 0) audio.play().catch(() => {}); }
+
+  // 브라우저 자동재생 정책: 첫 사용자 조작 때 재생 시작
+  const startOnce = () => { tryPlay(); document.removeEventListener("pointerdown", startOnce); };
+  document.addEventListener("pointerdown", startOnce, { once: true });
+
+  btn.addEventListener("click", (e) => { e.stopPropagation(); pop.classList.toggle("show"); });
+  document.addEventListener("pointerdown", (e) => { if (!wrap.contains(e.target)) pop.classList.remove("show"); });
+  slider.addEventListener("input", () => {
+    vol = slider.value / 100;
+    audio.volume = vol;
+    volTxt.textContent = slider.value;
+    if (vol === 0) { wantPlay = false; audio.pause(); }
+    else { wantPlay = true; audio.play().catch(() => {}); }
+    setIcon();
+  });
+  setIcon();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", setupBGM);
+else setupBGM();

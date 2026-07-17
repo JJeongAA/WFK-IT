@@ -32,6 +32,7 @@ const I18N = {
       select: "재료 고르기", chop: "썰기", mince: "다지기", stirfry: "볶기",
       boil: "끓이기", grill: "굽기", season: "양념하기", mix: "버무리기",
       plate: "담기", rinse: "헹구기", blanch: "데치기", braise: "졸이기", fryegg: "계란 부치기",
+      stew: "재료 넣고 끓이기",
     },
     // 각 동작 안내
     tips: {
@@ -40,6 +41,7 @@ const I18N = {
       mince: "마늘을 빠르게 연타해서 곱게 다져요!",
       stirfry: "팬 안에서 마우스를 꾹 누른 채 빙글빙글 저어요 — 멈추면 타요!",
       boil: "게이지가 초록 구간일 때 '완성!'을 눌러요!",
+      stew: "재료를 국에 하나씩 넣고, 게이지가 초록일 때 '완성!'을 눌러요!",
       grill: "고기가 노릇해지면(초록) 탭해서 뒤집어요!",
       season: "양념을 하나씩 탭해서 넣어요!",
       mix: "그릇 안에서 빙글빙글 저어 골고루 버무려요!",
@@ -92,6 +94,7 @@ const I18N = {
       select: "Gather", chop: "Chop", mince: "Mince", stirfry: "Stir-fry",
       boil: "Boil", grill: "Grill", season: "Season", mix: "Toss",
       plate: "Plate", rinse: "Rinse", blanch: "Blanch", braise: "Braise", fryegg: "Fry Egg",
+      stew: "Add & Simmer",
     },
     tips: {
       select: "Gather all the ingredients you need! (Avoid the wrong ones)",
@@ -99,6 +102,7 @@ const I18N = {
       mince: "Tap the garlic fast to mince it finely!",
       stirfry: "Hold and swirl your cursor around the pan to stir — don't stop or it burns!",
       boil: "Press 'Done!' when the gauge is in the green zone!",
+      stew: "Drop each ingredient into the broth, then press 'Done!' in the green zone!",
       grill: "Tap to flip the meat when it turns golden (green)!",
       season: "Tap each seasoning to add it one by one!",
       mix: "Swirl around the bowl to toss everything evenly!",
@@ -151,6 +155,7 @@ const I18N = {
       select: "Зібрати", chop: "Нарізати", mince: "Подрібнити", stirfry: "Смажити",
       boil: "Варити", grill: "Готувати", season: "Приправити", mix: "Перемішати",
       plate: "Подати", rinse: "Промити", blanch: "Бланшувати", braise: "Тушкувати", fryegg: "Смажити яйце",
+      stew: "Додати й варити",
     },
     tips: {
       select: "Збери всі потрібні інгредієнти! (Уникай зайвих)",
@@ -158,6 +163,7 @@ const I18N = {
       mince: "Швидко тапай по часнику, щоб дрібно його подрібнити!",
       stirfry: "Затисни й кружляй курсором по пательні, щоб смажити — не зупиняйся, бо згорить!",
       boil: "Натисни «Готово!», коли шкала в зеленій зоні!",
+      stew: "Кидай інгредієнти в бульйон по одному, тоді натисни «Готово!» у зеленій зоні!",
       grill: "Торкнись, щоб перевернути м'ясо, коли воно золотисте (зелене)!",
       season: "Торкайся кожної приправи, щоб додати по черзі!",
       mix: "Кружляй по мисці, щоб рівномірно перемішати!",

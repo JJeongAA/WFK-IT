@@ -5,6 +5,16 @@
 
 ---
 
+## 🎵 배경음악 (BGM) — Pixabay
+
+- 파일: `assets/bgm/hitslab-korean-korea-korean-music-502004.mp3`
+- Music by **Ievgen Poltavskyi** (Pixabay 사용자 hitslab) from **Pixabay**
+- 출처: https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=502004
+- 제작자: https://pixabay.com/ko/users/hitslab-47305729/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=502004
+- 라이선스: Pixabay Content License (상업/비상업 무료 사용 가능)
+
+---
+
 ## 🍲 요리 완성 사진 — 공유마당 (한국저작권위원회), CC BY
 
 | 요리 | 저작자 | 라이선스 | 출처 |
@@ -25,37 +35,30 @@
 
 ---
 
-## 🖌️ 재료 벡터/그림 — ⚠️ 출처 확인 필요 (학생이 채워주세요)
+## 🥗 재료 벡터/이미지 — Openclipart & Unsplash
 
-아래 파일들은 출처 정보(.txt)가 없습니다. 사용한 벡터/이미지의 **원본 출처와 라이선스를 반드시 확인**해 아래에 기입하세요.
-(예: openclipart CC0, SVGRepo, Pixabay 등)
+재료 그림·사진은 아래 두 곳에서 가져왔습니다.
 
-| 재료 | 파일 | 출처 URL | 라이선스 |
-|---|---|---|---|
-| 당근(carrot) | food-carrot.svg | (기입) | (기입) |
-| 밥(rice) | food-rice.svg | (기입) | (기입) |
-| 시금치(spinach) | food-spinach.svg | (기입) | (기입) |
-| 버섯(mushroom) | food-mushroom.svg | (기입) | (기입) |
-| 소고기(beef) | food-meat.svg | (기입) | (기입) |
-| 계란(egg) | food-egg.svg | (기입) | (기입) |
-| 마늘(garlic) | food-garlic.svg | (기입) | (기입) |
-| 파(scallion) | food-green onion.svg | (기입) | (기입) |
-| 참기름(sesame) | food-sesame-oil-fixed.svg | (기입) | (기입) |
-| 두부(tofu) | food-tofu.svg | (기입) | (기입) |
-| 감자(potato) | food-potato.svg | (기입) | (기입) |
-| 오이(cucumber) | food-Cucumber.svg | (기입) | (기입) |
-| 애호박(zucchini) | food-GlitchCourgette.svg | (기입) | (기입) |
-| 배(pear) | food-asia pear.svg | (기입) | (기입) |
-| 청양고추(chili) | food-red chili.svg | (기입) | (기입) |
-| 당면(glassNoodle) | food-Dangmeyon.jpg | (기입) | (기입) |
-| 된장(doenjang) | food-soybean paste.jpg | (기입) | (기입) |
-| 대추(jujube) | food-jujube.jpg | (기입) | (기입) |
-| 후추(pepper) | food-pepper.jpg | (기입) | (기입) |
-| 설탕(sugar) | food-sugar.jpg | (기입) | (기입) |
+### ✏️ 벡터 그림 (SVG) — Openclipart
+- 출처: **https://openclipart.org/**
+- 라이선스: **CC0 1.0 (퍼블릭도메인)** — 자유 사용, 저작자 표시 의무 없음
+- 해당 파일 (`assets/ingredients/food-*.svg`):
+  밥, 계란, 당근, 시금치, 버섯, 소고기, 참기름, 마늘, 파, 배,
+  두부, 애호박, 감자, 청양고추, 오이, 양파, 무
+
+### 📷 사진 (JPG/PNG) — Unsplash
+- 출처: **https://unsplash.com/ko**
+- 라이선스: **Unsplash License** — 상업/비상업 무료 사용 가능
+- 해당 파일:
+  - 설탕 `food-sugar.jpg`, 대추 `food-jujube.jpg`, 후추 `food-pepper.jpg`
+  - 고추장 `gochujang-nobg.png`, 된장 `doenjang-nobg.png`
+  - 당면 `dangmyeon-nobg.png`, 냉면 면 `naengmyeon-noodle-nobg.png`
+  - ※ `*-nobg.png` 는 원본 사진에서 **배경만 제거(누끼)한 파생본**입니다.
 
 ---
 
 ## 📌 참고
-- **CC BY**: 자유 사용 가능하되 **저작자 표시 필수**.
-- **CC0 / 퍼블릭도메인**: 표시 의무 없음(그래도 기록 권장).
+- **CC BY**: 자유 사용 가능하되 **저작자 표시 필수** (공유마당 요리·재료 사진).
+- **CC0 / 퍼블릭도메인**: 표시 의무 없음 (Openclipart 벡터).
+- **Unsplash License**: 무료 사용 가능 (표시는 권장).
 - 이미지가 없는 재료는 게임에서 자동으로 **이모지**로 표시됩니다.

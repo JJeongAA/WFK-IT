@@ -17,6 +17,8 @@
  *     rinse    — промити:             { type:"rinse", item:"noodle" }
  *     fryegg   — смажити яйце:        { type:"fryegg", item:"egg" }
  *     plate    — подати у миску:      { type:"plate", items:["rice","carrot", ...] }
+ *     stew     — кинути в бульйон і варити (для супів/рагу, напр. твенджан-чіге):
+ *                                     { type:"stew", items:["potato","tofu","chili", ...] }
  *
  *  ⚠️ Використовуй лише id інгредієнтів зі словника ING нижче.
  *  ing(): { id, emoji, ko, en, ua } 재료 헬퍼
@@ -152,8 +154,9 @@ const DISHES = [
     stages: [
       { type: "select", need: ["water", "doenjang", "potato", "zucchini", "onion", "tofu", "chili"] },
       // 🎯 ЗАВДАННЯ 4 (된장찌개): додай етапи готування!
-      //   Ідея: нарізати(chop) овочі → приправити(season) твенджаном →
-      //   варити(boil) → подати(plate)
+      //   Ідея: нарізати(chop) овочі → розвести(season) твенджан у воді →
+      //   кинути інгредієнти в бульйон і варити(stew) — це фінал!
+      //   напр.: { type:"stew", items:["potato","zucchini","onion","tofu","chili","scallion"] }
     ],
     decoys: ["glassNoodle", "sugar", "ice", "pear", "ribs", "vinegar"],
     culture: {
