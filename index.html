@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>한식 마스터 · Korean Kitchen Master</title>
+  <meta name="description" content="우크라이나 학생들을 위한 한식 요리 게임 — 비빔밥, 불고기, 잡채, 된장찌개, 냉면, 갈비찜" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%9A%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 배경 장식 -->
+  <div class="bg-decor" aria-hidden="true"></div>
+
+  <div id="app">
+
+    <!-- 상단 바 -->
+    <header class="topbar">
+      <div class="brand" id="brandHome" role="button" tabindex="0">
+        <span class="brand-icon">🍚</span>
+        <div class="brand-text">
+          <span class="brand-title" data-i18n="appTitle">한식 마스터</span>
+          <span class="brand-sub" data-i18n="appSubtitle"></span>
+        </div>
+      </div>
+      <div class="topbar-controls">
+        <div class="lang-switch" id="langSwitch"></div>
+        <button class="icon-btn" id="soundBtn" title="Sound">🔊</button>
+      </div>
+    </header>
+
+    <!-- ============ 화면 1: 홈 / 설정 ============ -->
+    <main class="screen active" id="screen-home">
+      <section class="panel">
+        <h2 class="panel-h" data-i18n="chooseDifficulty">난이도 선택</h2>
+        <div class="difficulty-grid" id="difficultyGrid"></div>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-h" data-i18n="chooseDish">요리 선택</h2>
+        <div class="dish-grid" id="dishGrid"></div>
+      </section>
+    </main>
+
+    <!-- ============ 화면 2: 게임 ============ -->
+    <main class="screen" id="screen-game">
+      <div class="game-hud">
+        <button class="hud-btn" id="quitBtn">⬅ <span data-i18n="backToMenu">메뉴로</span></button>
+        <div class="hud-dish">
+          <span class="hud-dish-emoji" id="cookDishEmoji">🍲</span>
+          <span class="hud-dish-name" id="cookDishName"></span>
+        </div>
+        <div class="hud-stat">
+          <span class="hud-label" data-i18n="score">점수</span>
+          <span class="hud-value" id="hudScore">0</span>
+        </div>
+      </div>
+
+      <!-- 단계 표시 (조리 과정 점) -->
+      <div class="stage-track" id="stageTrack"></div>
+
+      <!-- 단계 안내 -->
+      <div class="stage-head">
+        <span class="stage-badge" id="stageBadge">1/6</span>
+        <span class="stage-action" id="stageAction"></span>
+        <p class="stage-tip" id="stageTip"></p>
+      </div>
+
+      <!-- 미니게임이 렌더링되는 영역 -->
+      <div class="stage-area" id="stageArea"></div>
+
+      <div class="feedback" id="feedback"></div>
+    </main>
+
+    <!-- ============ 화면 3: 결과 ============ -->
+    <main class="screen" id="screen-result">
+      <div class="result-card">
+        <div class="result-emoji" id="resultEmoji">🏆</div>
+        <h2 class="result-title" id="resultTitle"></h2>
+        <div class="result-dish" id="resultDish"></div>
+
+        <div class="result-stats">
+          <div class="rstat"><span class="rstat-v" id="rScore">0</span><span class="rstat-l" data-i18n="score">점수</span></div>
+          <div class="rstat"><span class="rstat-v" id="rAcc">0%</span><span class="rstat-l" data-i18n="accuracy">숙련도</span></div>
+        </div>
+
+        <div class="stars" id="resultStars"></div>
+
+        <div class="culture-box">
+          <div class="culture-h" data-i18n="culturalNote">🇰🇷 한국 문화 이야기</div>
+          <p class="culture-text" id="cultureText"></p>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn btn-primary" id="againBtn" data-i18n="playAgain">다시 하기</button>
+          <button class="btn btn-ghost" id="nextBtn" data-i18n="nextDish">다른 요리 하기</button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer" data-i18n="footer"></footer>
+  </div>
+
+  <!-- 큰 안내 오버레이 (레시피 미리보기 / 카운트다운) -->
+  <div class="overlay" id="overlay">
+    <div class="overlay-inner">
+      <div class="overlay-big" id="overlayBig"></div>
+      <div class="overlay-msg" id="overlayMsg"></div>
+    </div>
+  </div>
+
+  <script src="js/fx.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/dishes.js"></script>
+  <script src="js/engines.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
