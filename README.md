@@ -30,8 +30,8 @@ static/style.css      # 디자인
 student/
   app_student.py      # 학생 실습용 (TODO 채우기)
 GUIDE.md              # 수업 가이드 (선생님용)
-start.bat / .command  # 더블클릭 실행 (윈도우 / 맥)
-share.bat / .command  # 더블클릭 폰 공유
+start.bat / .command     # 더블클릭 실행 (윈도우 / 맥)
+share_cf.bat / .command  # 더블클릭 폰 공유 (Cloudflare)
 ```
 
 ## ▶️ 실행 방법
@@ -42,14 +42,12 @@ share.bat / .command  # 더블클릭 폰 공유
 - **`start.bat` 더블클릭** → 자동으로 설치 + 실행 + 브라우저가 저절로 열려요.
 - **`share_cf.bat` 더블클릭** ⭐ → 서버 + **폰 공유 링크**(Cloudflare, 안정적). `https://xxxx.trycloudflare.com` 주소가 떠요. (가입 X, 무료)
   - 필요 파일: `cloudflared.exe` (무료, 한 번만 다운로드해서 폴더에 두면 됨)
-- `share.bat` → localhost.run 방식 (가끔 끊겨서 비추천. `share_cf.bat` 이 더 안정적)
 
 > ⚠️ 공유용 창은 **끝날 때까지 닫지 마세요.** 창을 닫으면 링크가 죽어요.
 
 **맥(Mac):**
 - **`start.command` 더블클릭** → 설치 + 실행 + 브라우저 자동
 - **`share_cf.command` 더블클릭** ⭐ → 폰 공유(Cloudflare, 안정적). `cloudflared`가 없으면 칩(Intel/Apple)에 맞게 **자동 다운로드**해요.
-- `share.command` → localhost.run 방식 (가끔 끊겨서 비추천)
 - ⚠️ 맥은 처음 한 번만: 터미널에서 `chmod +x *.command` 실행
   (또는 파일 우클릭 → "열기"). 그 뒤부턴 더블클릭이면 돼요.
 
