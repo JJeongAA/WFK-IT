@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Таємний лист · 비밀편지{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div class="hero-emoji">💌</div>
+  <h1>Таємний лист<span class="ko-sub">비밀편지</span></h1>
+  <p class="subtitle">
+    Створи скриньку і поділись посиланням з друзями!
+    <span class="ko">편지함을 만들어 친구에게 링크를 보내보세요!</span>
+  </p>
+</div>
+
+{% if error_uk %}
+<div class="card error-box">
+  ⚠️ {{ error_uk }}
+  <span class="ko">{{ error_ko }}</span>
+</div>
+{% endif %}
+
+<!-- 새 편지함 만들기 / Нова скринька -->
+<form class="card form" method="post" action="{{ url_for('create') }}">
+  <div class="form-title">🆕 Нова скринька <span class="ko">새 편지함 만들기</span></div>
+  <label>Нікнейм (буде у посиланні) <span class="ko">닉네임 (링크에 사용돼요)</span></label>
+  <input type="text" name="name" placeholder="напр. / 예: bunny" maxlength="20" required>
+  <label>Пароль <span class="ko">비밀번호 (4자 이상)</span></label>
+  <input type="password" name="password" placeholder="••••" minlength="4" required>
+  <button type="submit" class="btn">📮 Створити <small class="btn-ko">만들기</small></button>
+</form>
+
+<!-- 이미 있으면 로그인 / Вже маєш скриньку -->
+<form class="card form" method="post" action="{{ url_for('enter') }}">
+  <div class="form-title">🔑 Вже маєш скриньку? <span class="ko">이미 편지함이 있다면</span></div>
+  <label>Твій нікнейм <span class="ko">내 닉네임</span></label>
+  <input type="text" name="name" placeholder="напр. / 예: bunny" maxlength="20" required>
+  <button type="submit" class="btn ghost">📬 Увійти <small class="btn-ko">내 편지함 로그인</small></button>
+</form>
+
+<p class="hint">💡 Нікнейм + пароль замість бази даних. · 닉네임+비밀번호로 관리해요.</p>
+{% endblock %}

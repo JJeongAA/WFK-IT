@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Вхід · 로그인{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div class="hero-emoji">🔑</div>
+  <h1>{{ box_id }}<span class="ko-sub">편지함 로그인</span></h1>
+  <p class="subtitle">
+    Введи пароль, щоб побачити свої листи.
+    <span class="ko">비밀번호를 입력하면 받은 편지를 볼 수 있어요.</span>
+  </p>
+</div>
+
+{% if error %}
+<div class="card error-box">
+  ⚠️ Невірний пароль
+  <span class="ko">비밀번호가 틀렸어요</span>
+</div>
+{% endif %}
+
+<form class="card form" method="post" action="{{ url_for('inbox', box_id=box_id) }}">
+  <label>Пароль <span class="ko">비밀번호</span></label>
+  <input type="password" name="password" required autofocus>
+  <button type="submit" class="btn">📬 Увійти <small class="btn-ko">들어가기</small></button>
+</form>
+
+<a class="btn ghost" href="{{ url_for('home') }}">🏠 На головну <small class="btn-ko">처음으로</small></a>
+{% endblock %}

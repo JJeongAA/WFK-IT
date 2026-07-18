@@ -1,0 +1,21 @@
+# Replit 실행 설정 / Налаштування запуску Replit
+# Run 버튼을 누르면: 필요한 라이브러리 설치 후 app.py 실행
+# Кнопка Run: встановлює бібліотеки, потім запускає app.py
+
+entrypoint = "app.py"
+modules = ["python-3.11"]
+
+run = "pip install -r requirements.txt && python app.py"
+
+[nix]
+channel = "stable-24_05"
+
+# 앱 내부 포트(5000)를 외부 웹 주소(80)로 연결
+# Внутрішній порт (5000) -> зовнішня веб-адреса (80)
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "cloudrun"
+run = ["sh", "-c", "python app.py"]

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · {{ title_ko }}{% endblock %}
+
+{% block content %}
+<div class="hero big">
+  <div class="hero-emoji">{{ emoji }}</div>
+  <h1>{{ title }}<span class="ko-sub">{{ title_ko }}</span></h1>
+  <p class="subtitle">
+    {{ message }}
+    <span class="ko">{{ message_ko }}</span>
+  </p>
+</div>
+<a class="btn ghost" href="{{ url_for('home') }}">🏠 На головну <small class="btn-ko">처음으로</small></a>
+{% endblock %}

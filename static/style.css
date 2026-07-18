@@ -1,0 +1,207 @@
+/* =========================================================
+   비밀편지 - 아기자기한 파스텔 스타일
+   ========================================================= */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  background: linear-gradient(160deg, #ffe9f0 0%, #eef3ff 50%, #fff6e6 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 20px 12px;
+}
+
+/* 휴대폰처럼 보이는 가운데 세로 화면 */
+.phone {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------- 제목 영역 ---------- */
+.hero { text-align: center; padding: 24px 12px 8px; }
+.hero.big { padding-top: 60px; }
+.hero-emoji { font-size: 56px; animation: pop 0.5s ease; }
+.hero h1 {
+  font-size: 30px;
+  color: #5b4b8a;
+  margin-top: 6px;
+  text-shadow: 1px 2px 0 #fff;
+}
+.subtitle { color: #7d7597; margin-top: 10px; line-height: 1.6; font-size: 15px; }
+
+/* 두 언어 표시용 (우크라이나어 크게 + 한글 작게) */
+.ko-sub { display: block; font-size: 15px; color: #9a8fbf; font-weight: 700; margin-top: 4px; }
+.subtitle .ko { display: block; font-size: 13px; color: #a79ec7; margin-top: 5px; }
+.btn-ko { display: block; font-size: 12px; font-weight: 600; opacity: 0.9; margin-top: 3px; }
+label .ko { color: #a79ec7; font-weight: 500; }
+.link-card small .ko { display: block; color: #b3a9d0; }
+
+/* ---------- 카드 & 폼 ---------- */
+.card {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(150, 130, 200, 0.18);
+  backdrop-filter: blur(4px);
+}
+
+.form { display: flex; flex-direction: column; gap: 12px; }
+.form label { font-weight: 700; color: #6a5d9c; font-size: 14px; }
+.form-title { font-weight: 800; color: #5b4b8a; font-size: 17px; margin-bottom: 2px; }
+
+/* 안내/에러 박스 / коробка помилки */
+.error-box { background: #ffe6ee; color: #c2456b; text-align: center; font-weight: 700; }
+.error-box .ko { display: block; font-size: 13px; color: #d98aa4; font-weight: 500; margin-top: 3px; }
+
+input, textarea {
+  width: 100%;
+  border: 2px solid #e7ddff;
+  border-radius: 14px;
+  padding: 13px 15px;
+  font-size: 15px;
+  font-family: inherit;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+input:focus, textarea:focus { outline: none; border-color: #b8a4ff; }
+textarea { resize: vertical; }
+
+/* ---------- 버튼 ---------- */
+.btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  background: linear-gradient(135deg, #ff9ec2, #b39bff);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  border: none;
+  border-radius: 16px;
+  padding: 15px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(179, 155, 255, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 9px 22px rgba(179, 155, 255, 0.55); }
+.btn:active { transform: translateY(0); }
+.btn.ghost {
+  background: #fff;
+  color: #8a7ec0;
+  box-shadow: 0 4px 12px rgba(150, 130, 200, 0.15);
+}
+
+/* ---------- 링크 안내 카드 ---------- */
+.link-card { display: flex; flex-direction: column; gap: 8px; }
+.link-card.secret { border: 2px dashed #ffc4dd; }
+.link-label { font-weight: 800; color: #6a5d9c; }
+.link-box {
+  background: #f6f2ff;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 13px;
+  color: #5b4b8a;
+  word-break: break-all;
+  user-select: all;
+}
+.link-card small { color: #9a8fbf; font-size: 12px; }
+
+.hint { text-align: center; color: #a79ec7; font-size: 13px; }
+
+/* ---------- 받은 편지함 (아기자기 아이콘 정원) ---------- */
+.garden {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  padding: 10px;
+}
+.ornament {
+  width: 74px;
+  height: 74px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 14px rgba(150, 130, 200, 0.25);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: float 3s ease-in-out infinite, pop 0.4s ease backwards;
+  animation-delay: var(--delay, 0s), var(--delay, 0s);
+  transition: transform 0.15s;
+}
+.ornament:hover { transform: scale(1.15) rotate(-6deg); }
+.ornament-icon { font-size: 34px; }
+
+.empty { text-align: center; color: #8a7ec0; }
+.empty-emoji { font-size: 44px; margin-bottom: 8px; }
+
+/* ---------- 아이콘/색 고르기 (picker) ---------- */
+.picker { display: flex; flex-wrap: wrap; gap: 8px; }
+.pick-input { position: absolute; opacity: 0; width: 0; height: 0; }
+.pick {
+  display: flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; border-radius: 14px;
+  background: #fff; border: 2px solid #eee4ff; cursor: pointer;
+  font-size: 26px; transition: transform 0.12s, box-shadow 0.12s;
+}
+.pick-color { width: 42px; height: 42px; border-radius: 50%; }
+.pick-input:checked + .pick {
+  border-color: #b39bff;
+  box-shadow: 0 0 0 3px rgba(179, 155, 255, 0.35);
+  transform: scale(1.1);
+}
+
+/* ---------- 보낸 사람 / 삭제 버튼 ---------- */
+.modal-from { font-weight: 800; color: #8a7ec0; margin-top: 8px; font-size: 15px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 6px; }
+.modal-actions .btn { flex: 1; }
+.btn.danger { background: linear-gradient(135deg, #ff8a9c, #ff6f91); box-shadow: 0 6px 16px rgba(255, 111, 145, 0.4); }
+
+/* ---------- 편지 내용 팝업 ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(70, 55, 110, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 10;
+}
+.modal.show { display: flex; }
+.modal-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 30px 24px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(70, 55, 110, 0.3);
+  animation: pop 0.35s ease;
+}
+.modal-icon { font-size: 50px; }
+.modal-message {
+  margin: 18px 0;
+  font-size: 17px;
+  line-height: 1.7;
+  color: #4a4066;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.modal-time { color: #a79ec7; font-size: 12px; margin-bottom: 20px; }
+
+/* ---------- 애니메이션 ---------- */
+@keyframes pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}

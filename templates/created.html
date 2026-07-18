@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Скриньку створено · 편지함 완성{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div class="hero-emoji">🎉</div>
+  <h1>Скриньку створено!<span class="ko-sub">편지함 완성!</span></h1>
+  <p class="subtitle">
+    Скринька <b>{{ name }}</b> готова.
+    <span class="ko"><b>{{ name }}</b> 편지함이 만들어졌어요.</span>
+  </p>
+</div>
+
+<div class="card link-card">
+  <div class="link-label">📤 Посилання для друзів <span class="ko">친구에게 보낼 공유 링크</span></div>
+  <div class="link-box">{{ url_for('write', box_id=name, _external=True) }}</div>
+  <small>
+    Друзі напишуть тобі анонімно.
+    <span class="ko">이 링크로 친구가 익명 편지를 써요.</span>
+  </small>
+</div>
+
+<div class="card link-card secret">
+  <div class="link-label">🔑 Як зайти пізніше <span class="ko">나중에 다시 들어가는 법</span></div>
+  <small>
+    Заходь на головну і вводь нікнейм <b>{{ name }}</b> + пароль.
+    Посилання можна навіть не зберігати! 😉
+    <span class="ko">홈에서 닉네임 <b>{{ name }}</b> + 비밀번호로 로그인하면 돼요. 이제 링크 잃어버려도 괜찮아요!</span>
+  </small>
+</div>
+
+<a class="btn" href="{{ url_for('inbox', box_id=name) }}">
+  📬 Відкрити мою скриньку <small class="btn-ko">내 편지함 열기</small>
+</a>
+{% endblock %}

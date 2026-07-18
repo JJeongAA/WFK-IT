@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Лист для {{ name }} · {{ name }}님에게{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div class="hero-emoji">✍️</div>
+  <h1>Лист для {{ name }}<span class="ko-sub">{{ name }}님에게</span></h1>
+  <p class="subtitle">
+    Напиши лист і прикрась його! 🎨
+    <span class="ko">편지를 쓰고 예쁘게 꾸며보세요!</span>
+  </p>
+</div>
+
+<form class="card form" method="post" action="{{ url_for('write', box_id=box_id) }}">
+  <!-- 보낸 사람 닉네임 (선택) / нікнейм (необов'язково) -->
+  <label>Твоє ім'я <span class="ko">보내는 사람 (비우면 익명)</span></label>
+  <input type="text" name="sender" placeholder="напр. / 예: 토끼 (선택)" maxlength="20">
+
+  <!-- 편지 내용 / текст -->
+  <label for="message">Текст листа <span class="ko">편지 내용</span></label>
+  <textarea id="message" name="message" rows="5"
+            placeholder="Напиши, що хочеш сказати... / 하고 싶은 말을 적어주세요..."
+            maxlength="500" required></textarea>
+
+  <!-- 아이콘 고르기 / вибір іконки -->
+  <label>Обери іконку <span class="ko">아이콘 고르기</span></label>
+  <div class="picker">
+    {% for ic in icons %}
+    <input class="pick-input" type="radio" name="icon" id="ic{{ loop.index }}"
+           value="{{ ic }}" {% if loop.first %}checked{% endif %}>
+    <label class="pick pick-icon" for="ic{{ loop.index }}">{{ ic }}</label>
+    {% endfor %}
+  </div>
+
+  <!-- 색 고르기 / вибір кольору -->
+  <label>Колір листа <span class="ko">편지 색 고르기</span></label>
+  <div class="picker">
+    {% for col in colors %}
+    <input class="pick-input" type="radio" name="color" id="col{{ loop.index }}"
+           value="{{ col }}" {% if loop.first %}checked{% endif %}>
+    <label class="pick pick-color" for="col{{ loop.index }}" style="background: {{ col }}"></label>
+    {% endfor %}
+  </div>
+
+  <button type="submit" class="btn">💌 Надіслати <small class="btn-ko">편지 보내기</small></button>
+</form>
+
+<p class="hint">💡 Ім'я — за бажанням. · 이름은 선택이에요 (익명 가능).</p>
+{% endblock %}
