@@ -13,3 +13,5 @@ student/SOLUTIONS.md
 # 완성본(정답 코드) — 선생님 로컬 전용, 학생에겐 안 올림
 app.py
 run_full.bat
+share_full.bat
+_server.py
