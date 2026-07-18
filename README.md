@@ -16,7 +16,7 @@
 ## 📁 폴더 구성
 
 ```
-app.py                # 완성본 (바로 실행됨)
+app_student.py        # ★ 여기의 TODO를 채우면 사이트가 동작해요 (직접 작성)
 requirements.txt      # 필요한 라이브러리 (Flask)
 templates/            # 화면 (HTML)
   home.html           #   편지함 만들기 + 로그인
@@ -27,9 +27,7 @@ templates/            # 화면 (HTML)
   inbox.html          #   받은 편지함 (아이콘으로 표시)
   error.html          #   에러 화면
 static/style.css      # 디자인
-student/
-  app_student.py      # 학생 실습용 (TODO 채우기)
-GUIDE.md              # 수업 가이드 (선생님용)
+GUIDE.md              # 수업 가이드
 start.bat / .command     # 더블클릭 실행 (윈도우 / 맥)
 share_cf.bat / .command  # 더블클릭 폰 공유 (Cloudflare)
 ```
@@ -58,7 +56,7 @@ share_cf.bat / .command  # 더블클릭 폰 공유 (Cloudflare)
 
 ```bash
 pip install -r requirements.txt
-python app.py
+python app_student.py
 ```
 
 브라우저에서 **http://127.0.0.1:5000** 접속.
@@ -72,7 +70,7 @@ python app.py
 
 1. [replit.com](https://replit.com) 접속 → 새 Repl 만들기
 2. 이 프로젝트 폴더 전체를 그대로 올린다
-   (**`.replit`, `requirements.txt`, `app.py`, `templates/`, `static/` 모두 포함** — 숨김파일 `.replit` 빠뜨리지 않기!)
+   (**`.replit`, `requirements.txt`, `app_student.py`, `templates/`, `static/` 모두 포함** — 숨김파일 `.replit` 빠뜨리지 않기!)
 3. **Run ▶** 버튼 클릭
    → 자동으로 Flask 설치 후 실행되고, 위쪽 웹뷰에 사이트가 뜹니다.
 4. 웹뷰 주소창의 `https://....replit.dev` 가 **어디서든 열리는 진짜 공유 링크!**
@@ -84,5 +82,6 @@ python app.py
 
 ## 🎓 학생이라면?
 
-`student/app_student.py` 를 열어 `TODO` 를 직접 채워보세요.
-막히면 `GUIDE.md` 와 완성본 `app.py` 를 참고하세요.
+`app_student.py` 를 열어 `TODO 1~5` 를 직접 채워보세요.
+- 채우기 전에 실행하면 오류가 나요 — TODO를 채워야 사이트가 동작해요.
+- 힌트는 코드 안 주석에 있어요. 막히면 `GUIDE.md` 를 참고하세요.

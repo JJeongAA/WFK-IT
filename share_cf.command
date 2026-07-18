@@ -30,7 +30,7 @@ python3 -m pip install -r requirements.txt
 
 # 2) 서버 실행 (백그라운드)
 echo "[2/3] 서버 실행 중... / Starting server..."
-python3 app.py &
+python3 app_student.py &
 SERVER_PID=$!
 sleep 3
 

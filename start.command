@@ -15,4 +15,4 @@ echo "3초 뒤 브라우저가 저절로 열려요 / Браузер відкри
 echo "끄려면 이 창을 닫으세요 / Щоб зупинити — закрий це вікно"
 echo ""
 ( sleep 3; open http://127.0.0.1:5000 ) &
-python3 app.py
+python3 app_student.py

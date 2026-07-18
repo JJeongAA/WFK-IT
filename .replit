@@ -1,11 +1,11 @@
 # Replit 실행 설정 / Налаштування запуску Replit
-# Run 버튼을 누르면: 필요한 라이브러리 설치 후 app.py 실행
-# Кнопка Run: встановлює бібліотеки, потім запускає app.py
+# Run 버튼을 누르면: 필요한 라이브러리 설치 후 app_student.py 실행
+# Кнопка Run: встановлює бібліотеки, потім запускає app_student.py
 
-entrypoint = "app.py"
+entrypoint = "app_student.py"
 modules = ["python-3.11"]
 
-run = "pip install -r requirements.txt && python app.py"
+run = "pip install -r requirements.txt && python app_student.py"
 
 [nix]
 channel = "stable-24_05"
@@ -18,4 +18,4 @@ externalPort = 80
 
 [deployment]
 deploymentTarget = "cloudrun"
-run = ["sh", "-c", "python app.py"]
+run = ["sh", "-c", "python app_student.py"]

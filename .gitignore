@@ -10,3 +10,5 @@ cloudflared
 cloudflared.tgz
 # 정답지 — 학생용 저장소에 올리지 않음 / відповіді — не завантажувати
 student/SOLUTIONS.md
+# 완성본(정답 코드) — 선생님 로컬 전용, 학생에겐 안 올림
+app.py
