@@ -1,0 +1,5 @@
+# 셸 스크립트(.command/.sh)는 항상 LF — 맥/리눅스에서 실행되게
+*.command text eol=lf
+*.sh      text eol=lf
+# 윈도우 배치 파일은 CRLF
+*.bat     text eol=crlf
