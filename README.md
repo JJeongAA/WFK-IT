@@ -48,8 +48,9 @@ share.bat / .command  # 더블클릭 폰 공유
 
 **맥(Mac):**
 - **`start.command` 더블클릭** → 설치 + 실행 + 브라우저 자동
-- **`share.command` 더블클릭** → 폰 공유 링크 자동
-- ⚠️ 맥은 처음 한 번만: 터미널에서 `chmod +x start.command share.command` 실행
+- **`share_cf.command` 더블클릭** ⭐ → 폰 공유(Cloudflare, 안정적). `cloudflared`가 없으면 칩(Intel/Apple)에 맞게 **자동 다운로드**해요.
+- `share.command` → localhost.run 방식 (가끔 끊겨서 비추천)
+- ⚠️ 맥은 처음 한 번만: 터미널에서 `chmod +x *.command` 실행
   (또는 파일 우클릭 → "열기"). 그 뒤부턴 더블클릭이면 돼요.
 
 > 💡 `python`(맥은 `python3`)이 설치돼 있어야 해요. 파이썬 배우는 중이면 보통 이미 있어요.

@@ -4,7 +4,9 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-# cloudflared 프로그램 (용량 큼, 각자 다운로드)
+# cloudflared 프로그램 (용량 큼, 각자 다운로드/자동설치)
 cloudflared.exe
+cloudflared
+cloudflared.tgz
 # 정답지 — 학생용 저장소에 올리지 않음 / відповіді — не завантажувати
 student/SOLUTIONS.md
