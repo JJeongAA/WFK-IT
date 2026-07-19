@@ -1,10 +1,14 @@
 """
-Таємний лист — версія для практики (з логіном)
-비밀편지 - 학생 실습용 (닉네임+비밀번호 로그인)
+Таємний лист — версія для практики (기초용)
+비밀편지 - 학생 실습용
 ========================================================
-UK: Заповни всі TODO у цьому файлі, потім запусти start.bat (або: python app_student.py).
-KO: 이 파일의 TODO를 모두 채운 뒤, start.bat 을 실행하세요 (또는: python app_student.py).
+UK: Заповни TODO 1~3 у цьому файлі, потім запусти start.bat (або: python app_student.py).
+KO: 이 파일의 TODO 1~3 을 채운 뒤, start.bat 을 실행하세요 (또는: python app_student.py).
     (templates, static 폴더와 같은 위치에 있어야 해요 — 이미 그렇게 되어 있어요.)
+
+* 비밀번호 해시 · 로그인 · 로그아웃은 어려운 부분이라 '완성 코드'로 제공돼요.
+  읽고 "이렇게 동작하는구나"만 이해하면 돼요 (채울 필요 없음).
+  Частина з паролем/логіном уже готова — просто прочитай і зрозумій.
 """
 
 import json
@@ -29,7 +33,8 @@ NICK_RE = re.compile(r"^[\w-]{2,20}$")
 
 
 # ======================================================================
-# TODO 1) 파일 읽기/쓰기 / читання-запис файлів
+# TODO 1) 파일 읽기 / 쓰기  (load_json / save_json)
+#   데이터베이스 대신 '파일'에 저장하고 불러오는 함수예요.
 # ======================================================================
 def setup_files():
     os.makedirs(LETTERS_DIR, exist_ok=True)
@@ -39,13 +44,13 @@ def setup_files():
 
 def load_json(path, default):
     # UK: якщо файлу немає -> поверни default; інакше open(...,"r") + json.load
-    # KO: 파일 없으면 default; 있으면 open(...,"r") + json.load 로 읽기
+    # KO: 파일이 없으면 default 를 반환, 있으면 open(...,"r") 로 열어 json.load 로 읽기
     pass  # TODO
 
 
 def save_json(path, data):
     # UK: open(...,"w", encoding="utf-8") + json.dump(data, f, ensure_ascii=False, indent=2)
-    # KO: open(...,"w", encoding="utf-8") + json.dump(data, f, ensure_ascii=False, indent=2)
+    # KO: open(...,"w", encoding="utf-8") 로 열어 json.dump(data, f, ensure_ascii=False, indent=2)
     pass  # TODO
 
 
@@ -85,12 +90,10 @@ def create():
             error_uk="Цей нікнейм зайнятий.",
             error_ko="이미 있는 닉네임이에요.")
 
-    # TODO 2) UK: Збережи скриньку з ХЕШЕМ пароля (не текстом!).
-    #            Підказка: "password_hash": generate_password_hash(password)
-    #         KO: 비밀번호를 '해시'해서 저장하세요 (원문 X!).
-    #            힌트: "password_hash": generate_password_hash(password)
+    # (완성 제공) 비밀번호는 '해시'로 저장돼요 — 원문 저장 X, 파일이 새어도 안전.
+    # (готово) пароль зберігається як хеш, не як текст.
     mailboxes[name] = {
-        "password_hash": "",  # TODO: generate_password_hash(password)
+        "password_hash": generate_password_hash(password),
         "created": datetime.now().strftime("%Y-%m-%d %H:%M"),
     }
     save_json(MAILBOX_FILE, mailboxes)
@@ -123,12 +126,16 @@ def write(box_id):
             color = COLORS[0]
         if message:
             letters = load_json(letters_path(box_id), [])
-            # TODO 3) 새 편지를 추가하고 저장 / додай лист і збережи
-            #   letters.append({
-            #     "id": secrets.token_hex(4), "message": message, "sender": sender,
-            #     "icon": icon, "color": color,
+            # ==========================================================
+            # TODO 2) 새 편지를 letters 리스트에 추가하고, 파일에 저장하세요.
+            #   넣을 값(딕셔너리):
+            #     "id": secrets.token_hex(4),   # 삭제에 쓸 고유 번호
+            #     "message": message,
+            #     "sender": sender,             # 비우면 익명
+            #     "icon": icon, "color": color, # 사용자가 고른 값
             #     "time": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            #   })  후 save_json 으로 저장
+            #   힌트: letters.append({ ... })  후  save_json(letters_path(box_id), letters)
+            # ==========================================================
             pass  # TODO
         return redirect(url_for("thanks", box_id=box_id))
 
@@ -151,17 +158,12 @@ def inbox(box_id):
     if box is None:
         abort(404)
 
+    # (완성 제공) 로그인: 비밀번호가 맞는지 확인하고, 맞으면 세션에 기록해요.
+    # (готово) вхід: перевіряємо пароль і запам'ятовуємо в сесії.
     if not is_logged_in(box_id):
         if request.method == "POST":
             password = request.form.get("password", "")
-            # TODO 4) UK: Перевір пароль. Якщо правильний -> увійти (сесія),
-            #            інакше -> показати помилку.
-            #            Підказка: check_password_hash(box["password_hash"], password)
-            #                      session["auth_" + box_id] = True
-            #         KO: 비밀번호가 맞으면 로그인(세션 저장), 틀리면 오류.
-            #            힌트: check_password_hash(box["password_hash"], password)
-            #                  session["auth_" + box_id] = True
-            if False:  # TODO: check_password_hash(...) 로 바꾸기
+            if check_password_hash(box["password_hash"], password):
                 session["auth_" + box_id] = True
                 return redirect(url_for("inbox", box_id=box_id))
             return render_template("login.html", box_id=box_id, error=True)
@@ -173,23 +175,26 @@ def inbox(box_id):
 
 @app.route("/box/<box_id>/logout")
 def logout(box_id):
-    # TODO 5) 로그아웃: 세션에서 이 편지함 인증 지우기 / вийти: прибрати сесію
-    #   힌트: session.pop("auth_" + box_id, None)
-    pass  # TODO
+    # (완성 제공) 로그아웃: 세션에서 이 편지함 로그인 기록을 지워요.
+    session.pop("auth_" + box_id, None)
     return redirect(url_for("home"))
 
 
-# (이미 완성된 기능) 편지 삭제 — 로그인한 주인만 / готово: видалення листа
 @app.route("/box/<box_id>/delete", methods=["POST"])
 def delete_letter(box_id):
     mailboxes = load_json(MAILBOX_FILE, {})
     if box_id not in mailboxes:
         abort(404)
     if not is_logged_in(box_id):
-        abort(403)
+        abort(403)   # (완성 제공) 로그인한 주인만 삭제 가능
+
     letter_id = request.form.get("letter_id", "")
     letters = load_json(letters_path(box_id), [])
-    letters = [lt for lt in letters if lt.get("id") != letter_id]
+    # ==============================================================
+    # TODO 3) letter_id 와 '다른' 편지들만 남기세요 (그 편지만 삭제).
+    #   힌트: letters = [lt for lt in letters if lt.get("id") != letter_id]
+    # ==============================================================
+    pass  # TODO
     save_json(letters_path(box_id), letters)
     return redirect(url_for("inbox", box_id=box_id))
 
