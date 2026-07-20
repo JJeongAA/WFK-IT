@@ -20,8 +20,11 @@
  *    feedback(msg,ok), flashOverlay(big,msg,ms,cb), beep(), stopLoops()
  *    FX.ding() FX.vibrate() FX.shake() FX.success()  — звук/вібрація/трясіння
  *
- *  🎯 ТВОЇ ЗАВДАННЯ — знайди 3 функції з позначкою "ЗАВДАННЯ" і напиши код:
- *     1) renderDishes()     2) completeStage()     3) endGame()
+ *  🎯 ТВОЇ ЗАВДАННЯ (легко!):
+ *     • У ЦЬОМУ файлі — функція completeStage(): заповни 2 місця з позначкою ✏️ TODO
+ *       (це += та if/else — так само як у Python).
+ *     • У файлі dishes.js — заповни етапи готування (stages) для страв.
+ *     Решта (малювання екранів тощо) вже написана за тебе.
  * ======================================================= */
 "use strict";
 
@@ -72,32 +75,29 @@ function renderDifficulty() {
   });
 }
 
+/* ✅ ГОТОВО (не чіпай) — малює картки страв на головному екрані. */
 function renderDishes() {
-  // ============================================================
-  // 🎯 ЗАВДАННЯ 1: Показати картки страв на головному екрані
-  // ============================================================
-  // Дивись готовий приклад renderDifficulty() вище — принцип такий самий!
-  //
-  // Кроки:
-  //  1) Знайди контейнер:      const grid = $("dishGrid");
-  //  2) Очисти його:           grid.innerHTML = "";
-  //  3) Для кожної страви з масиву DISHES створи картку:
-  //        DISHES.forEach((dish) => {
-  //          const card = document.createElement("div");
-  //          card.className = "dish-card";
-  //          card.innerHTML = `
-  //            <div class="dish-emoji">${dish.emoji}</div>
-  //            <div class="dish-name">${dish.name[state.lang]}</div>
-  //            <div class="dish-tag">${dish.tagline[state.lang]}</div>
-  //            <span class="dish-play">${t().startCooking} ▶</span>`;
-  //          card.onclick = () => startGame(dish);   // клік → почати гру
-  //          grid.appendChild(card);
-  //        });
-  //
-  // ✅ ГОТОВО КОЛИ: видно 5 карток страв, і клік по картці запускає гру.
-
-  // TODO: твій код тут
-
+  const grid = $("dishGrid");
+  grid.innerHTML = "";
+  DISHES.forEach((dish) => {
+    const card = document.createElement("div");
+    card.className = "dish-card";
+    card.tabIndex = 0;
+    card.style.setProperty("--dish-color", dish.color);
+    const photo = dishImgURL(dish.id);
+    const thumb = photo
+      ? `<div class="dish-photo"><img src="${photo}" alt="${dish.name[state.lang]}" loading="lazy" onerror="var p=this.parentNode;if(p){p.className='dish-emoji';p.textContent='${dish.emoji}'}"></div>`
+      : `<div class="dish-emoji">${dish.emoji}</div>`;
+    card.innerHTML = `${thumb}
+      <div class="dish-name">${dish.name[state.lang]}</div>
+      <div class="dish-tag">${dish.tagline[state.lang]}</div>
+      <span class="dish-steps">🍳 ${dish.stages.length} ${t().recipeSteps}</span>
+      <span class="dish-play">${t().startCooking} ▶</span>`;
+    const go = () => startGame(dish);
+    card.onclick = go;
+    card.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
+    grid.appendChild(card);
+  });
 }
 
 function showScreen(id) {
@@ -165,66 +165,74 @@ function runStage() {
 
 function completeStage(quality) {
   // ============================================================
-  // 🎯 ЗАВДАННЯ 2: Завершити етап — нарахувати бали й перейти далі
+  // 🎯 ЗАВДАННЯ (game.js): нарахувати бали й перейти далі
+  //    Схоже на Python: += (додати) та if / else (умова).
+  //    Заповни лише 2 місця, позначені ??? . Решта вже готова.
   // ============================================================
-  // quality — число 0..1 (наскільки добре виконано етап).
-  //
-  // Кроки:
-  //  1) quality = clamp(quality);              // обмежити 0..1
-  //  2) state.qualities.push(quality);         // зберегти результат етапу
-  //  3) Порахувати бали й додати до рахунку:
-  //        const gained = Math.round(cfg().base * (0.4 + quality * 0.6));
-  //        state.score += gained;
-  //        $("hudScore").textContent = state.score;   // оновити рахунок на екрані
-  //  4) Перейти до наступного етапу:
-  //        state.stageIdx++;
-  //        updateStageTrack();
-  //  5) Показати спалах "✅" і що робити далі:
-  //        flashOverlay("✅", t().stageClear + "  +" + gained, 650, () => {
-  //          if (state.stageIdx >= state.stages.length) endGame();  // етапів більше немає
-  //          else runStage();                                       // наступний етап
-  //        });
-  //  (за бажанням) FX.ding(880); FX.vibrate(30);
-  //
-  // ✅ ГОТОВО КОЛИ: після кожного етапу рахунок зростає і гра йде далі.
+  quality = clamp(quality);              // обмежити 0..1 (готово)
+  state.qualities.push(quality);         // зберегти результат (як list.append у Python) (готово)
 
-  // TODO: твій код тут
+  const gained = Math.round(cfg().base * (0.4 + quality * 0.6));  // бали за етап (готово)
 
+  // ✏️ TODO 1 — додай бали (gained) до рахунку.
+  //    Зараз додається 0, тому рахунок не росте. Заміни 0 на  gained .
+  //    У Python: state.score += gained  (в JS так само!)
+  state.score += 0;   // <-- заміни 0 на gained
+
+  $("hudScore").textContent = state.score;   // показати рахунок (готово)
+  if (quality > 0.7) FX.ding(880); else FX.ding(520);   // звук (готово)
+  state.stageIdx++;                          // перейти на наступний етап (готово)
+  updateStageTrack();
+
+  flashOverlay("✅", t().stageClear + "  +" + gained, 650, () => {
+    // ✏️ TODO 2 — коли етапів більше НЕ лишилось → показати результат (endGame),
+    //    інакше → запустити наступний етап (runStage).
+    //    Зараз стоїть  true , тому гра завершується вже після 1-го етапу.
+    //    Заміни  true  на умову "етапів більше немає":
+    //         state.stageIdx >= state.stages.length
+    if (true) {   // <-- заміни true на  state.stageIdx >= state.stages.length
+      endGame();
+    } else {
+      runStage();
+    }
+  });
 }
 
+/* ✅ ГОТОВО (не чіпай) — екран результату: бали, майстерність, зірки, культура. */
 function endGame() {
-  // ============================================================
-  // 🎯 ЗАВДАННЯ 3: Показати екран результату
-  // ============================================================
-  // Кроки:
-  //  1) stopLoops();
-  //  2) Середня якість і майстерність у %:
-  //        const avg = state.qualities.reduce((a, b) => a + b, 0) / (state.qualities.length || 1);
-  //        const skill = Math.round(avg * 100);
-  //  3) Зірки (1..3):
-  //        let stars = avg >= 0.85 ? 3 : avg >= 0.6 ? 2 : 1;
-  //  4) Підсумок і емодзі:
-  //        let verdict, emoji;
-  //        if (stars === 3) { verdict = t().verdict.perfect; emoji = "🏆"; }
-  //        else if (stars === 2) { verdict = t().verdict.great; emoji = "😋"; }
-  //        else { verdict = t().verdict.good; emoji = "🙂"; }
-  //  5) Заповнити екран результату:
-  //        $("resultEmoji").textContent = emoji;
-  //        $("resultTitle").textContent = verdict;
-  //        $("resultDish").textContent  = state.dish.emoji + " " + state.dish.name[state.lang];
-  //        $("rScore").textContent = state.score;
-  //        $("rAcc").textContent   = skill + "%";
-  //        $("cultureText").textContent = state.dish.culture[state.lang];
-  //  6) Намалювати зірки в контейнері $("resultStars"):
-  //        (створи 3 <span>⭐; для зайвих додай клас "star-off")
-  //  7) Показати екран:  showScreen("screen-result");
-  //  (за бажанням) FX.success();
-  //
-  // ✅ ГОТОВО КОЛИ: після останнього етапу видно бали, майстерність (%),
-  //    зірки та розповідь про культуру страви.
+  stopLoops();
+  const dict = t();
+  const avg = state.qualities.reduce((a, b) => a + b, 0) / (state.qualities.length || 1);
+  const skill = Math.round(avg * 100);
+  let stars = avg >= 0.85 ? 3 : avg >= 0.6 ? 2 : 1;
+  let verdict, emoji;
+  if (stars === 3) { verdict = dict.verdict.perfect; emoji = "🏆"; }
+  else if (stars === 2) { verdict = dict.verdict.great; emoji = "😋"; }
+  else if (avg >= 0.4) { verdict = dict.verdict.good; emoji = "🙂"; }
+  else { verdict = dict.verdict.ok; emoji = "💪"; }
 
-  // TODO: твій код тут
-
+  const rphoto = dishImgURL(state.dish.id);
+  const rEmoji = $("resultEmoji");
+  if (rphoto) {
+    rEmoji.innerHTML = `<div class="result-photo"><img src="${rphoto}" alt="${state.dish.name[state.lang]}" onerror="var p=this.parentNode;if(p)p.textContent='${emoji}'"><span class="result-badge">${emoji}</span></div>`;
+  } else {
+    rEmoji.textContent = emoji;
+  }
+  $("resultTitle").textContent = verdict;
+  $("resultDish").textContent = state.dish.emoji + " " + state.dish.name[state.lang];
+  $("rScore").textContent = state.score;
+  $("rAcc").textContent = skill + "%";
+  $("cultureText").textContent = state.dish.culture[state.lang];
+  const starsEl = $("resultStars");
+  starsEl.innerHTML = "";
+  for (let i = 0; i < 3; i++) {
+    const s = document.createElement("span");
+    s.textContent = "⭐";
+    if (i >= stars) s.className = "star-off";
+    starsEl.appendChild(s);
+  }
+  FX.success(); FX.vibrate([40, 60, 40, 60, 80]);
+  showScreen("screen-result");
 }
 
 /* =================================================================
