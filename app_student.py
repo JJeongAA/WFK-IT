@@ -21,8 +21,29 @@ from flask import (Flask, render_template, request, redirect, url_for,
                    abort, session)
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from i18n import TEXT   # 다국어 텍스트 (uk / ko)
+
 app = Flask(__name__)
 app.secret_key = "wfk-secret-letter-class-key-change-me"
+
+DEFAULT_LANG = "uk"   # 기본 언어
+
+
+# (완성 제공) 모든 화면에 현재 언어(lang)와 번역(t)을 전달
+@app.context_processor
+def inject_i18n():
+    lang = session.get("lang", DEFAULT_LANG)
+    if lang not in TEXT:
+        lang = DEFAULT_LANG
+    return {"lang": lang, "t": TEXT[lang]}
+
+
+# (완성 제공) 오른쪽 상단 버튼: 언어 전환
+@app.route("/lang/<code>")
+def set_lang(code):
+    if code in TEXT:
+        session["lang"] = code
+    return redirect(request.referrer or url_for("home"))
 
 DATA_DIR = "data"
 MAILBOX_FILE = os.path.join(DATA_DIR, "mailboxes.json")
@@ -202,17 +223,13 @@ def delete_letter(box_id):
 @app.errorhandler(404)
 def not_found(e):
     return render_template("error.html", emoji="🌫️",
-                           title="Скриньку не знайдено", title_ko="편지함을 찾을 수 없어요",
-                           message="Перевір нікнейм у посиланні.",
-                           message_ko="닉네임(링크)이 올바른지 확인해 주세요."), 404
+                           title_key="err404_title", msg_key="err404_msg"), 404
 
 
 @app.errorhandler(403)
 def forbidden(e):
     return render_template("error.html", emoji="🔒",
-                           title="Немає доступу", title_ko="접근 권한이 없어요",
-                           message="Спочатку увійди у свою скриньку.",
-                           message_ko="먼저 내 편지함에 로그인하세요."), 403
+                           title_key="err403_title", msg_key="err403_msg"), 403
 
 
 if __name__ == "__main__":

@@ -1,22 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Лист надіслано · 편지 전송 완료{% endblock %}
+{% block title %}{{ t.thanks_title }}{% endblock %}
 
 {% block content %}
 <div class="hero big">
   <div class="hero-emoji">💖</div>
-  <h1>Лист надіслано!<span class="ko-sub">편지 전송 완료!</span></h1>
-  <p class="subtitle">
-    Твоє послання дійшло до <b>{{ name }}</b>.
-    <span class="ko"><b>{{ name }}</b>님에게 마음이 전달됐어요.</span>
-  </p>
+  <h1>{{ t.thanks_title }}</h1>
+  <p class="subtitle">{{ t.thanks_sub_a }}<b>{{ name }}</b>{{ t.thanks_sub_b }}</p>
 </div>
 
-<a class="btn" href="{{ url_for('write', box_id=box_id) }}">
-  ✍️ Написати ще один лист
-  <small class="btn-ko">편지 하나 더 쓰기</small>
-</a>
-<a class="btn ghost" href="{{ url_for('home') }}">
-  📮 Створити свою скриньку
-  <small class="btn-ko">내 편지함도 만들기</small>
-</a>
+<a class="btn" href="{{ url_for('write', box_id=box_id) }}">✍️ {{ t.write_more }}</a>
+<a class="btn ghost" href="{{ url_for('home') }}">📮 {{ t.make_own }}</a>
 {% endblock %}

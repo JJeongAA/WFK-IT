@@ -1,12 +1,18 @@
 <!doctype html>
-<html lang="ko">
+<html lang="{{ lang }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}비밀편지{% endblock %}</title>
+  <title>{% block title %}{{ t.brand }}{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+  <!-- 오른쪽 상단 언어 전환 / перемикач мови -->
+  <div class="langbar">
+    <a href="{{ url_for('set_lang', code='uk') }}" class="lang {{ 'on' if lang == 'uk' else '' }}">УКР</a>
+    <a href="{{ url_for('set_lang', code='ko') }}" class="lang {{ 'on' if lang == 'ko' else '' }}">한국어</a>
+  </div>
+
   <div class="phone">
     {% block content %}{% endblock %}
   </div>

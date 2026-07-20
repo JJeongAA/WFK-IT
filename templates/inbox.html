@@ -1,28 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Скринька · {{ name }}님의 편지함{% endblock %}
+{% block title %}{{ name }} · {{ t.brand }}{% endblock %}
 
 {% block content %}
 <div class="hero">
   <div class="hero-emoji">📬</div>
-  <h1>Для {{ name }}<span class="ko-sub">{{ name }}님에게</span></h1>
-  <p class="subtitle">
-    Надійшло листів: <b>{{ count }}</b>
-    <span class="ko"><b>{{ count }}개</b>의 비밀편지가 도착했어요!</span>
-  </p>
+  <h1>{{ t.inbox_for_a }}{{ name }}{{ t.inbox_for_b }}</h1>
+  <p class="subtitle">{{ t.inbox_count_a }}<b>{{ count }}</b>{{ t.inbox_count_b }}</p>
 </div>
 
-<!-- 공유 링크 다시 보여주기 + 복사 / показати посилання + копіювати -->
+<!-- 공유 링크 + 복사 -->
 <div class="card link-card">
-  <div class="link-label">📤 Посилання для друзів <span class="ko">친구에게 보낼 공유 링크</span></div>
+  <div class="link-label">📤 {{ t.share_label }}</div>
   <div class="link-box" id="shareLink">{{ url_for('write', box_id=name, _external=True) }}</div>
-  <button type="button" class="btn ghost" id="copyBtn" onclick="copyShare()">
-    📋 Копіювати посилання <small class="btn-ko">링크 복사하기</small>
-  </button>
+  <button type="button" class="btn ghost" id="copyBtn" onclick="copyShare()">📋 {{ t.copy_btn }}</button>
 </div>
 
 {% if letters %}
-  <!-- Листи показані як милі іконки. Натисни, щоб прочитати.
-       편지가 귀여운 아이콘으로 표시돼요. 누르면 내용이 열려요. -->
   <div class="garden">
     {% for letter in letters %}
       <button class="ornament"
@@ -35,19 +28,13 @@
 {% else %}
   <div class="card empty">
     <div class="empty-emoji">🌙</div>
-    <p>
-      Ще немає листів.<br>Поділись посиланням з друзями!
-      <span class="ko">아직 도착한 편지가 없어요. 공유 링크를 친구에게 보내보세요!</span>
-    </p>
+    <p>{{ t.empty }}</p>
   </div>
 {% endif %}
 
-<a class="btn ghost" href="{{ url_for('logout', box_id=name) }}">
-  🚪 Вийти
-  <small class="btn-ko">로그아웃</small>
-</a>
+<a class="btn ghost" href="{{ url_for('logout', box_id=name) }}">🚪 {{ t.logout }}</a>
 
-<!-- Вікно з текстом листа · 편지 내용을 보여주는 팝업 -->
+<!-- 편지 팝업 -->
 <div id="modal" class="modal" onclick="closeLetter()">
   <div class="modal-card" id="modal-card" onclick="event.stopPropagation()">
     <div id="modal-icon" class="modal-icon">💌</div>
@@ -55,33 +42,31 @@
     <p id="modal-message" class="modal-message"></p>
     <div id="modal-time" class="modal-time"></div>
     <div class="modal-actions">
-      <button class="btn ghost" onclick="closeLetter()">Закрити <small class="btn-ko">닫기</small></button>
-      <!-- 삭제 (로그인한 주인만) / видалити -->
+      <button class="btn ghost" onclick="closeLetter()">{{ t.close }}</button>
       <form method="post" action="{{ url_for('delete_letter', box_id=name) }}"
-            onsubmit="return confirm('이 편지를 삭제할까요? / Видалити цей лист?');" style="margin:0; flex:1;">
+            onsubmit="return confirm('{{ t.delete_confirm }}');" style="margin:0; flex:1;">
         <input type="hidden" name="letter_id" id="delId">
-        <button type="submit" class="btn danger">🗑 Видалити <small class="btn-ko">삭제</small></button>
+        <button type="submit" class="btn danger">🗑 {{ t.delete }}</button>
       </form>
     </div>
   </div>
 </div>
 
-<!-- Текст листів передається у JavaScript (Python -> JSON)
-     편지 내용을 자바스크립트로 전달 (파이썬 -> JSON) -->
 <script>
   const LETTERS = {{ letters | tojson }};
+  const T = { anon: {{ t.from_anon | tojson }},
+              copy: {{ t.copy_btn | tojson }},
+              copied: {{ t.copied | tojson }},
+              clipFail: {{ t.clipboard_fail | tojson }} };
 
   function openLetter(index) {
     const letter = LETTERS[index];
     document.getElementById("modal-icon").textContent = letter.icon;
-    // 보낸 사람: 있으면 이름, 없으면 익명 / відправник або анонім
     document.getElementById("modal-from").textContent =
-        letter.sender ? ("✍️ " + letter.sender) : "🙈 익명 / анонім";
+        letter.sender ? ("✍️ " + letter.sender) : ("🙈 " + T.anon);
     document.getElementById("modal-message").textContent = letter.message;
     document.getElementById("modal-time").textContent = "🕒 " + letter.time;
-    // 편지 색을 팝업 배경에 살짝 반영 / колір листа у фоні
     document.getElementById("modal-card").style.background = letter.color || "#ffffff";
-    // 삭제 버튼이 이 편지를 가리키게 / кнопка видалення -> цей лист
     document.getElementById("delId").value = letter.id || "";
     document.getElementById("modal").classList.add("show");
   }
@@ -90,19 +75,13 @@
     document.getElementById("modal").classList.remove("show");
   }
 
-  // 공유 링크 복사 / копіювати посилання
   function copyShare() {
     const text = document.getElementById("shareLink").textContent.trim();
     const btn = document.getElementById("copyBtn");
     navigator.clipboard.writeText(text).then(function () {
-      btn.innerHTML = "✅ Скопійовано! <small class='btn-ko'>복사됐어요!</small>";
-      setTimeout(function () {
-        btn.innerHTML = "📋 Копіювати посилання <small class='btn-ko'>링크 복사하기</small>";
-      }, 1500);
-    }).catch(function () {
-      // 클립보드가 막힌 환경(예: http)에서는 직접 선택하도록 안내
-      alert("링크를 길게 눌러 복사하세요 / Виділи та скопіюй посилання вручну");
-    });
+      btn.innerHTML = "✅ " + T.copied;
+      setTimeout(function () { btn.innerHTML = "📋 " + T.copy; }, 1500);
+    }).catch(function () { alert(T.clipFail); });
   }
 </script>
 {% endblock %}

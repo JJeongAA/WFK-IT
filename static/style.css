@@ -13,6 +13,34 @@ body {
   padding: 20px 12px;
 }
 
+/* 오른쪽 상단 언어 전환 버튼 / перемикач мови */
+.langbar {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 6px;
+  z-index: 50;
+}
+.langbar .lang {
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+  color: #8a7ec0;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid #e7ddff;
+  border-radius: 12px;
+  padding: 6px 11px;
+  box-shadow: 0 3px 10px rgba(150, 130, 200, 0.15);
+  transition: all 0.15s;
+}
+.langbar .lang:hover { transform: translateY(-1px); }
+.langbar .lang.on {
+  color: #fff;
+  background: linear-gradient(135deg, #ff9ec2, #b39bff);
+  border-color: transparent;
+}
+
 /* 휴대폰처럼 보이는 가운데 세로 화면 */
 .phone {
   width: 100%;
