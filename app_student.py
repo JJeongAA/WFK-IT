@@ -54,8 +54,9 @@ NICK_RE = re.compile(r"^[\w-]{2,20}$")
 
 
 # ======================================================================
-# TODO 1) 파일 읽기 / 쓰기  (load_json / save_json)
-#   데이터베이스 대신 '파일'에 저장하고 불러오는 함수예요.
+# TODO 1) UK: Читання / запис файлів (load_json / save_json)
+#         KO: 파일 읽기 / 쓰기 (load_json / save_json)
+#   UK: замість бази даних зберігаємо у 'файл' / KO: 데이터베이스 대신 '파일'에 저장
 # ======================================================================
 def setup_files():
     os.makedirs(LETTERS_DIR, exist_ok=True)
@@ -148,14 +149,16 @@ def write(box_id):
         if message:
             letters = load_json(letters_path(box_id), [])
             # ==========================================================
-            # TODO 2) 새 편지를 letters 리스트에 추가하고, 파일에 저장하세요.
-            #   넣을 값(딕셔너리):
-            #     "id": secrets.token_hex(4),   # 삭제에 쓸 고유 번호
+            # TODO 2) UK: Додай новий лист у список letters і збережи у файл.
+            #         KO: 새 편지를 letters 리스트에 추가하고, 파일에 저장하세요.
+            #   значення / 넣을 값 (dict):
+            #     "id": secrets.token_hex(4),   # унікальний id (видалення) / 삭제용 고유 번호
             #     "message": message,
-            #     "sender": sender,             # 비우면 익명
-            #     "icon": icon, "color": color, # 사용자가 고른 값
+            #     "sender": sender,             # порожньо = анонім / 비우면 익명
+            #     "icon": icon, "color": color, # вибір користувача / 사용자가 고른 값
             #     "time": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            #   힌트: letters.append({ ... })  후  save_json(letters_path(box_id), letters)
+            #   Підказка / 힌트:
+            #     letters.append({ ... })  ->  save_json(letters_path(box_id), letters)
             # ==========================================================
             pass  # TODO
         return redirect(url_for("thanks", box_id=box_id))
@@ -212,8 +215,10 @@ def delete_letter(box_id):
     letter_id = request.form.get("letter_id", "")
     letters = load_json(letters_path(box_id), [])
     # ==============================================================
-    # TODO 3) letter_id 와 '다른' 편지들만 남기세요 (그 편지만 삭제).
-    #   힌트: letters = [lt for lt in letters if lt.get("id") != letter_id]
+    # TODO 3) UK: Залиш лише листи, чий id НЕ дорівнює letter_id (видали саме цей).
+    #         KO: letter_id 와 '다른' 편지들만 남기세요 (그 편지만 삭제).
+    #   Підказка / 힌트:
+    #     letters = [lt for lt in letters if lt.get("id") != letter_id]
     # ==============================================================
     pass  # TODO
     save_json(letters_path(box_id), letters)
